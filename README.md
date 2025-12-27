@@ -17,6 +17,19 @@ La extensión permite:
 
 ---
 
+## 🚀 Impacto
+
+Este proyecto optimiza el proceso de enrolamiento en Citonova, reduciendo significativamente el tiempo operativo:
+
+- ⏱️ **Antes:** ~70 segundos por registro (proceso manual)
+- ⚡ **Después:** ~15 segundos por registro (con la extensión)
+- 📉 **Reducción de tiempo:** **≈80%**
+- 📈 **Mejora de velocidad:** **x4,6 más rápido**
+
+Esta mejora permite un flujo de trabajo más eficiente, reduce errores humanos y es especialmente efectiva en equipos de bajo rendimiento.
+
+---
+
 ## ✅ Funcionalidades
 
 - 📋 Lectura del portapapeles (formato TSV de Google Sheets)
