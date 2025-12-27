@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pegar a Citonova</title>
+    <style>
+        :root {
+            --bg: #111827;
+            /* gris oscuro */
+            --panel: #1f2937;
+            /* panel */
+            --text: #e5e7eb;
+            /* texto */
+            --muted: #9ca3af;
+            /* secundario */
+            --ok: #10b981;
+            /* verde */
+            --bad: #ef4444;
+            /* rojo */
+            --btn: #2563eb;
+            /* azul */
+            --btnHover: #1d4ed8;
+            --btnDisabled: #374151;
+        }
+
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 260px;
+            background: var(--bg);
+            color: var(--text);
+            font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            font-size: 13px;
+        }
+
+        .wrap {
+            padding: 10px;
+        }
+
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            background: var(--panel);
+            margin-bottom: 10px;
+            user-select: none;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            background: var(--muted);
+            flex: 0 0 auto;
+        }
+
+        .dot.ok {
+            background: var(--ok);
+        }
+
+        .dot.bad {
+            background: var(--bad);
+        }
+
+        .statusText {
+            line-height: 1.2;
+        }
+
+        .small {
+            display: block;
+            margin-top: 2px;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        button {
+            width: 100%;
+            border: 0;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-weight: 600;
+            cursor: pointer;
+            background: var(--btn);
+            color: white;
+        }
+
+        button:hover {
+            background: var(--btnHover);
+        }
+
+        button:disabled {
+            cursor: not-allowed;
+            background: var(--btnDisabled);
+            color: #cbd5e1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrap">
+        <div class="status">
+            <span id="dot" class="dot"></span>
+            <div class="statusText">
+                <span id="statusText">Verificando…</span>
+            </div>
+        </div>
+
+        <button id="paste" disabled>📋 Pegar fila</button>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+
+</html>
