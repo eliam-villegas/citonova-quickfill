@@ -183,7 +183,7 @@ Formato automático: CON BARRERA PATENTE ABCD12 ARRENDATARIO (CORREDORA) 514-1
 
 ## 👤 Autor
 
-Desarrollado para uso operativo en **Puerto Velero**.
+Desarrollado por Eliam Villegas para uso operativo en **Puerto Velero**.
 
 ---
 
