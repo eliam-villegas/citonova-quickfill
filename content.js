@@ -8,7 +8,7 @@ chrome.runtime.onMessage.addListener((msg) => {
     }
 
     const montoNum = parseInt((row.monto || "0").toString().replace(/\D/g, ""), 10) || 0;
-    const isConBarrera = (row.formaPago && row.formaPago.trim().length > 0) || montoNum > 0;
+    const isConBarrera = (S(row.formaPago).trim().length > 0) || montoNum > 0;
 
     // ---- Campos base ----
     fillField(['input[name="rut"]', '#rut'], normalizeRut(row.rut));
@@ -23,13 +23,12 @@ chrome.runtime.onMessage.addListener((msg) => {
     fillField(['textarea[name="obs"]', '#obs'], buildObservations(row, isConBarrera));
 
     // ---- Clasificación automática ----
-    handleClassification(row.tipo);
+    handleClassification(normalizeTipoResidente(row.tipo));
 
     // ---- Checkboxes PA + Email/Push por fila ----
     handleAccessChecks(isConBarrera);
 
-    // ---- NUEVO: Tipos de acceso (RUT/PATENTE) + copiar valores automáticamente ----
-    // Hacemos 2 pasadas para equipos lentos (DOM puede tardar en crear bloques)
+    // ---- Tipos de acceso (RUT/PATENTE) + copiar valores automáticamente ----
     ensureAccessTypes(row, isConBarrera);
     setTimeout(() => ensureAccessTypes(row, isConBarrera), 180);
 
@@ -130,19 +129,68 @@ function onlyDigits(v) {
     return S(v).replace(/\D/g, "");
 }
 
+function normalizeCompact(v) {
+    return S(v).trim().replace(/\s+/g, " ");
+}
+
+/** ✅ NUEVO: normaliza patente
+ * - Remueve espacios, guiones y cualquier símbolo
+ * - Deja solo letras/números
+ * - Convierte a mayúsculas
+ */
+function normalizePlate(v) {
+    return S(v).toUpperCase().replace(/[^A-Z0-9]/g, "");
+}
+
 
 // Observación final solicitada: "SIN/CON BARRERA PATENTE XYZ123 ARRENDATARIO (CORREDORA) 514-1"
 function buildObservations(row, isConBarrera) {
     const barreraTxt = isConBarrera ? "CON BARRERA" : "SIN BARRERA";
 
-    const patente = S(row.patente).trim() ? `PATENTE ${S(row.patente).trim().toUpperCase()}` : "";
-    const tipo = S(row.tipo).trim() ? S(row.tipo).trim().toUpperCase() : "";
+    const patenteNorm = normalizePlate(row.patente);
+    const patente = patenteNorm ? `PATENTE ${patenteNorm}` : "";
+
+    const tipo = normalizeTipoResidente(row.tipo);
+
     const corredor = S(row.propietario).trim() ? `(${S(row.propietario).trim()})` : "";
-    const depto = S(row.depto).trim();
+    const depto = row.depto ? normalizeCompact(row.depto) : "";
 
     return [barreraTxt, patente, tipo, corredor, depto]
         .filter(Boolean)
         .join(" ");
+}
+
+
+/** ✅ NUEVO: normaliza “tipo residente” a lo que espera Citonova
+ * - arriendo / arrienda / arrend... => ARRENDATARIO
+ * - visita / invitado => OTRO
+ * - propietario => PROPIETARIO
+ */
+function normalizeTipoResidente(tipoRaw) {
+    const t = S(tipoRaw)
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .toUpperCase()
+        .trim();
+
+    if (!t) return "";
+
+    // ARRENDATARIO (arriendo/arriendo temporal/arrend...)
+    if (
+        t.includes("ARREND") ||
+        t.includes("ARRIEND") ||
+        t.includes("ARRIENDO") ||
+        t === "ARRIENDO" ||
+        t === "ARRIENDO TEMPORAL"
+    ) return "ARRENDATARIO";
+
+    // PROPIETARIO
+    if (t.includes("PROPIET")) return "PROPIETARIO";
+
+    // OTRO (visita / invitado)
+    if (t.includes("VISIT") || t.includes("INVIT")) return "OTRO";
+
+    // Si ya viene correcto:
+    return t;
 }
 
 
@@ -169,10 +217,6 @@ function handleClassification(tipoRaw) {
 function handleAccessChecks(isConBarrera) {
     const accessInputs = Array.from(document.querySelectorAll('input[name="pa[]"]'));
 
-    // Estados esperados para las 3 filas conocidas:
-    // 0: siempre
-    // 1: depende
-    // 2: siempre
     const rowStates = {
         0: true,
         1: isConBarrera,
@@ -196,15 +240,11 @@ function handleAccessChecks(isConBarrera) {
 function setCheckboxState(el, checked) {
     if (!el) return;
 
-    const isChecked = el.checked;
-    if (isChecked === checked) return;
+    if (el.checked === checked) return;
 
     const label = el.closest("label");
-    if (label) {
-        label.click();
-    } else {
-        el.click();
-    }
+    if (label) label.click();
+    else el.click();
 
     if (el.checked !== checked) {
         el.checked = checked;
@@ -214,27 +254,22 @@ function setCheckboxState(el, checked) {
 
 
 /* ===========================
-   NUEVO: Tipos de acceso
-   - select#accesos con onchange="addAcceso(this)"
-   - bloques creados dentro de .mis-accesos
-   - cada bloque trae input[name="acceso[]"][value="1|2"] y input[name="codigo[]"]
+   Tipos de acceso
    =========================== */
 
 function ensureAccessTypes(row, isConBarrera) {
     const rutVal = normalizeRut(row.rut);
-    const patVal = S(row.patente).trim().toUpperCase();
+    const patVal = normalizePlate(row.patente); // ✅ ahora normalizada
 
     const needRut = rutVal.length > 0; // normalmente siempre
     const needPat = isConBarrera && patVal.length > 0;
 
     if (needRut) addAccessTypeIfMissing("1");
     if (needPat) addAccessTypeIfMissing("2");
-    // Opcional: eliminar patente cuando es SIN BARRERA
-    // if (!needPat) removeAccessTypeIfExists("2");
 
     // Rellenar códigos por tipo
     if (needRut) fillAccessCodeByType("1", rutVal);
-    if (needPat) fillAccessCodeByType("2", patVal);
+    if (needPat) fillAccessCodeByType("2", patVal); // ✅ patente limpia (sin espacios/guiones)
 }
 
 function addAccessTypeIfMissing(typeValue) {
@@ -281,7 +316,7 @@ function fillAccessCodeByType(typeValue, codeValue) {
     return false;
 }
 
-// Opcional (si luego lo quieres): remover bloques de patente cuando SIN BARRERA
+// Opcional: remover patente cuando SIN BARRERA
 function removeAccessTypeIfExists(typeValue) {
     const blocks = Array.from(document.querySelectorAll(".mis-accesos .row"));
     for (const block of blocks) {
