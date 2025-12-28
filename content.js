@@ -150,7 +150,7 @@ function buildObservations(row, isConBarrera) {
     const patenteNorm = normalizePlate(row.patente);
     const patente = patenteNorm ? `PATENTE ${patenteNorm}` : "";
 
-    // ✅ HOTFIX: tipo tal cual viene en la celda (solo trim)
+    // HOTFIX: tipo tal cual viene en la celda (solo trim)
     const tipoObs = S(row.tipo).trim();
 
     const corredor = S(row.propietario).trim() ? `(${S(row.propietario).trim()})` : "";
@@ -185,7 +185,7 @@ function normalizeTipoResidente(tipoRaw) {
 
     if (t.includes("PROPIET")) return "PROPIETARIO";
 
-    // ✅ Invitado/Visita => OTRO (como dijiste que existe la opción OTRO)
+    // Invitado/Visita => OTRO (como dijiste que existe la opción OTRO)
     if (t.includes("VISIT") || t.includes("INVIT")) return "OTRO";
 
     return t;
