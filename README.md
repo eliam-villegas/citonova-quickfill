@@ -1,4 +1,4 @@
-# Citonova QuickFill
+# QuickFill para Citonova
 
 Extensión de Google Chrome para **automatizar el ingreso de personas en Citonova** a partir de filas copiadas desde Google Sheets.
 
