@@ -133,7 +133,7 @@ function normalizeCompact(v) {
     return S(v).trim().replace(/\s+/g, " ");
 }
 
-/** ✅ NUEVO: normaliza patente
+/** normaliza patente
  * - Remueve espacios, guiones y cualquier símbolo
  * - Deja solo letras/números
  * - Convierte a mayúsculas
@@ -143,25 +143,26 @@ function normalizePlate(v) {
 }
 
 
-// Observación final solicitada: "SIN/CON BARRERA PATENTE XYZ123 ARRENDATARIO (CORREDORA) 514-1"
+// Observación final solicitada: "SIN/CON BARRERA PATENTE XYZ123 <TIPO CELDA> (CORREDORA) 514-1"
 function buildObservations(row, isConBarrera) {
     const barreraTxt = isConBarrera ? "CON BARRERA" : "SIN BARRERA";
 
     const patenteNorm = normalizePlate(row.patente);
     const patente = patenteNorm ? `PATENTE ${patenteNorm}` : "";
 
-    const tipo = normalizeTipoResidente(row.tipo);
+    // ✅ HOTFIX: tipo tal cual viene en la celda (solo trim)
+    const tipoObs = S(row.tipo).trim();
 
     const corredor = S(row.propietario).trim() ? `(${S(row.propietario).trim()})` : "";
     const depto = row.depto ? normalizeCompact(row.depto) : "";
 
-    return [barreraTxt, patente, tipo, corredor, depto]
+    return [barreraTxt, patente, tipoObs, corredor, depto]
         .filter(Boolean)
         .join(" ");
 }
 
 
-/** ✅ NUEVO: normaliza “tipo residente” a lo que espera Citonova
+/** normaliza “tipo residente” a lo que espera Citonova (solo para clasificación)
  * - arriendo / arrienda / arrend... => ARRENDATARIO
  * - visita / invitado => OTRO
  * - propietario => PROPIETARIO
@@ -174,7 +175,6 @@ function normalizeTipoResidente(tipoRaw) {
 
     if (!t) return "";
 
-    // ARRENDATARIO (arriendo/arriendo temporal/arrend...)
     if (
         t.includes("ARREND") ||
         t.includes("ARRIEND") ||
@@ -183,13 +183,11 @@ function normalizeTipoResidente(tipoRaw) {
         t === "ARRIENDO TEMPORAL"
     ) return "ARRENDATARIO";
 
-    // PROPIETARIO
     if (t.includes("PROPIET")) return "PROPIETARIO";
 
-    // OTRO (visita / invitado)
+    // ✅ Invitado/Visita => OTRO (como dijiste que existe la opción OTRO)
     if (t.includes("VISIT") || t.includes("INVIT")) return "OTRO";
 
-    // Si ya viene correcto:
     return t;
 }
 
@@ -259,17 +257,16 @@ function setCheckboxState(el, checked) {
 
 function ensureAccessTypes(row, isConBarrera) {
     const rutVal = normalizeRut(row.rut);
-    const patVal = normalizePlate(row.patente); // ✅ ahora normalizada
+    const patVal = normalizePlate(row.patente);
 
-    const needRut = rutVal.length > 0; // normalmente siempre
+    const needRut = rutVal.length > 0;
     const needPat = isConBarrera && patVal.length > 0;
 
     if (needRut) addAccessTypeIfMissing("1");
     if (needPat) addAccessTypeIfMissing("2");
 
-    // Rellenar códigos por tipo
     if (needRut) fillAccessCodeByType("1", rutVal);
-    if (needPat) fillAccessCodeByType("2", patVal); // ✅ patente limpia (sin espacios/guiones)
+    if (needPat) fillAccessCodeByType("2", patVal);
 }
 
 function addAccessTypeIfMissing(typeValue) {
@@ -283,11 +280,9 @@ function addAccessTypeIfMissing(typeValue) {
 
     select.value = typeValue;
 
-    // Si existe la función del sitio, la usamos (mejor)
     if (typeof window.addAcceso === "function") {
         window.addAcceso(select);
     } else {
-        // fallback: disparar onchange
         select.dispatchEvent(new Event("change", { bubbles: true }));
     }
 }
