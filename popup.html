@@ -98,6 +98,23 @@
             background: var(--btnDisabled);
             color: #cbd5e1;
         }
+
+        .footer {
+            font-size: 10px;
+            opacity: 0.45;
+            margin-top: 6px;
+            text-align: center;
+        }
+
+        .footer a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
     </style>
 </head>
 
@@ -112,6 +129,13 @@
 
         <button id="paste" disabled>📋 Pegar fila</button>
     </div>
+
+    <footer class="footer">
+        <a href="https://evillegas.cl" target="_blank" rel="noopener noreferrer">
+            Desarrollado por Eliam Villegas
+        </a>
+    </footer>
+
 
     <script src="popup.js"></script>
 </body>

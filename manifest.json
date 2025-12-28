@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "Citonova Quickfill",
+    "name": "Quickfill para Citonova",
     "version": "1.0",
     "description": "Pega filas de forma rápida de Google Sheets hacia el enrolamiento de Citonova. Desarrollado por Eliam Villegas.",
     "permissions": [
@@ -12,7 +12,7 @@
         "https://www.app.citonova.cl/*"
     ],
     "action": {
-        "default_title": "Citonova Quickfill",
+        "default_title": "Quickfill para Citonova",
         "default_popup": "popup.html",
         "default_icon": {
             "16": "icons/icon16.png",
