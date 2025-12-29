@@ -1,7 +1,7 @@
 {
     "manifest_version": 3,
     "name": "Quickfill para Citonova",
-    "version": "1.2.1",
+    "version": "1.2.3",
     "description": "Pega filas de forma rápida de Google Sheets hacia el enrolamiento de Citonova. Desarrollado por Eliam Villegas.",
     "permissions": [
         "activeTab",
