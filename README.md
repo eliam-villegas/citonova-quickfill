@@ -1,6 +1,21 @@
+<p align="center">
+  <img src="assets/quickfill_logo.png" alt="Logo de la extensión" width="180">
+</p>
+
+<p align="center">
+  <strong>Extensión de Navegador · Enrolamiento rápido para Citonova</strong>
+</p>
+
+<p align="center">
+  👉 <a href="https://chromewebstore.google.com/detail/quickfill-para-citonova/nofkpkmfjmikegbopmnedkmmeepcabhk" target="_blank">
+    <strong>Instalar desde Chrome Web Store</strong>
+  </a>
+</p>
+
+
 # QuickFill para Citonova
 
-Extensión de Google Chrome para **automatizar el ingreso de personas en Citonova** a partir de filas copiadas desde Google Sheets.
+Extensión de navegador para **automatizar el ingreso de personas en Citonova** a partir de filas copiadas desde Google Sheets.
 
 Desarrollada para el **control de acceso en Puerto Velero**, optimizada para **equipos de bajo rendimiento** y uso operativo continuo.
 
@@ -59,11 +74,14 @@ Esta mejora permite un flujo de trabajo más eficiente, reduce errores humanos y
 ├── popup.html
 ├── popup.js
 ├── content.js
+├── assets
+│   └── quickfill_logo.png
 └── icons
     ├── icon16.png
     ├── icon32.png
     ├── icon48.png
     └── icon128.png
+
 ```
 
 ---
@@ -80,7 +98,12 @@ Esta mejora permite un flujo de trabajo más eficiente, reduce errores humanos y
 
 ---
 
-## 📦 Instalación (modo desarrollador)
+## 📦 Instalación 
+
+### Opción recomendada
+👉 [**Instalación directa desde Chrome Web Store**](https://chromewebstore.google.com/detail/quickfill-para-citonova/nofkpkmfjmikegbopmnedkmmeepcabhk)
+
+### Modo desarrollador (alternativo)
 
 1. Clonar o descargar este repositorio
 2. Abrir Chrome y navegar a: chrome://extensions
